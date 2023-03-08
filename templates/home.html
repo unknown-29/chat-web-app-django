@@ -1,0 +1,413 @@
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% comment %} {%request.GET['validate']%} {% endcomment %}
+    <form method="get" action="chatWebApp/validate">
+        <span>username: </span>
+        <input type="text" name="username"/><br/><br/>
+        <span>password: </span>
+        <input type="password" name="password"/><br/><br/>
+        <input type="submit" value="submit">
+    </form>
+    <script>
+        const params = new URLSearchParams(document.location.search);
+        if(params.get("validate")!=null && params.get("validate")=="false"){
+            const error=document.createElement("h2")
+            error.textContent="error"
+            error.style.color="red"
+            document.querySelector("body").appendChild(error)
+        }
+        {% comment %} console.log() {% endcomment %}
+    </script>
+</body>
+</html>-->
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<!-- Font Awesome -->
+		<link
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+			rel="stylesheet"
+		/>
+		<!-- Google Fonts -->
+		<link
+			href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+			rel="stylesheet"
+		/>
+		<!-- MDB -->
+		<link
+			href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css"
+			rel="stylesheet"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+			integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+			crossorigin="anonymous"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.12.0/css/mdb.min.css"
+		/>
+	</head>
+	<style>
+		.btn {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.divider:after,
+		.divider:before {
+			content: "";
+			flex: 1;
+			height: 1px;
+			background: #eee;
+		}
+		.h-custom {
+			height: calc(100% - 73px);
+		}
+		@media (max-width: 450px) {
+			.h-custom {
+				height: 100%;
+			}
+		}
+	</style>
+	<body>
+		<section class="vh-100">
+			<div class="container-fluid h-custom">
+				<div
+					class="row d-flex justify-content-center align-items-center h-100"
+				>
+					<div class="col-md-9 col-lg-6 col-xl-5">
+						<img
+							src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
+							class="img-fluid"
+							alt="Sample image"
+						/>
+					</div>
+					<div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+						<form
+							id="form"
+							action="chatWebApp/validate"
+							method="get"
+						>
+							<div
+								class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start"
+							>
+								<p class="lead fw-normal mb-0 me-3">
+									Sign in with
+								</p>
+								<button
+									type="button"
+									class="btn btn-primary btn-floating mx-1"
+								>
+									<i class="fab fa-facebook-f"></i>
+								</button>
+
+								<button
+									type="button"
+									class="btn btn-primary btn-floating mx-1"
+								>
+									<i class="fab fa-twitter"></i>
+								</button>
+
+								<button
+									type="button"
+									class="btn btn-primary btn-floating mx-1"
+								>
+									<i class="fab fa-linkedin-in"></i>
+								</button>
+							</div>
+
+							<div class="divider d-flex align-items-center my-4">
+								<p class="text-center fw-bold mx-3 mb-0">Or</p>
+							</div>
+							<!--Name input-->
+							<div class="form-outline mb-4 d-none" id="namediv">
+								<input
+									type="text"
+									name="name"
+									id="name"
+									class="form-control form-control-lg"
+									placeholder="Enter your name"
+								/>
+								<label
+									class="form-label"
+									id="name-label"
+									for="name"
+									>Name</label
+								>
+							</div>
+							<!--Username input-->
+							<div class="form-outline mb-4" id="usernamediv">
+								<input
+									type="text"
+									name="username"
+									id="username"
+									class="form-control form-control-lg"
+									placeholder="Enter your username"
+								/>
+								<label
+									class="form-label"
+									id="username-label"
+									for="username"
+									>Username</label
+								>
+							</div>
+							<!-- Password input -->
+							<div class="form-outline mb-3" id="passworddiv">
+								<input
+									name="password"
+									type="password"
+									id="password"
+									class="form-control form-control-lg"
+									placeholder="Enter password"
+								/>
+								<label class="form-label" for="password"
+									>Password</label
+								>
+							</div>
+							<!-- Confirm Password input -->
+							<div class="form-outline mb-3 d-none" id="cpassworddiv">
+								<input
+									name="cpassword"
+									type="password"
+									id="cpassword"
+									class="form-control form-control-lg"
+									placeholder="Confirm password"
+								/>
+								<label class="form-label" for="cpassword"
+									>Confirm Password</label
+								>
+							</div>
+							<div
+								class="d-flex justify-content-between align-items-center"
+							>
+								<!-- Checkbox -->
+								<div class="form-check mb-0">
+									<input
+										class="form-check-input me-2"
+										type="checkbox"
+										value="show"
+										id="show-password"
+									/>
+									<label
+										class="form-check-label"
+										for="show-password"
+									>
+										Show Password
+									</label>
+								</div>
+								<a id="forgot-password" href="x" class="text-body"
+									>Forgot password?</a
+								>
+							</div>
+
+							<div class="text-center text-lg-start mt-4 pt-2">
+								<button
+									id="login"
+									type="button"
+									class="btn btn-primary btn-lg"
+									style="
+										padding-left: 2.5rem;
+										padding-right: 2.5rem;
+									"
+								>
+									Login
+								</button>
+								<button
+									id="create-account"
+									type="button"
+									class="btn btn-primary btn-lg d-none"
+									style="
+										padding-left: 2.5rem;
+										padding-right: 2.5rem;
+									"
+								>
+									Create Account
+								</button>
+								<button
+									id="submit-fp"
+									type="button"
+									class="btn btn-primary btn-lg d-none"
+									style="
+										padding-left: 2.5rem;
+										padding-right: 2.5rem;
+									"
+								>
+									Submit
+								</button>
+								<button
+									id="changep"
+									type="button"
+									class="btn btn-primary btn-lg d-none"
+									style="
+										padding-left: 2.5rem;
+										padding-right: 2.5rem;
+									"
+								>
+									Change Password
+								</button>
+								<p
+									id="register-p"
+									class="small fw-bold mt-2 pt-1 mb-0"
+								>
+									Don't have an account?
+									<a
+										id="register"
+										href="x"
+										class="link-danger"
+										>Register</a
+									>
+								</p>
+								<p
+									id="login-p"
+									class="small fw-bold mt-2 pt-1 mb-0 d-none"
+								>
+									Already have an account?
+									<a
+										id="login-link"
+										href="x"
+										class="link-danger"
+										>Login Now</a
+									>
+								</p>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div
+				class="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-primary"
+			>
+				<!-- Copyright -->
+				<div class="text-white mb-3 mb-md-0">
+					Copyright © 2020. All rights reserved.
+				</div>
+				<!-- Copyright -->
+
+				<!-- Right -->
+				<div>
+					<a href="x" class="text-white me-4">
+						<i class="fab fa-facebook-f"></i>
+					</a>
+					<a href="x" class="text-white me-4">
+						<i class="fab fa-twitter"></i>
+					</a>
+					<a href="x" class="text-white me-4">
+						<i class="fab fa-google"></i>
+					</a>
+					<a href="x" class="text-white">
+						<i class="fab fa-linkedin-in"></i>
+					</a>
+				</div>
+				<!-- Right -->
+			</div>
+		</section>
+		<!-- MDB -->
+		<script
+			type="text/javascript"
+			src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
+		></script>
+		<script>
+			document.querySelector("#login").addEventListener("click",()=>{
+			    document.querySelector("#form").submit()
+			})
+			const params = new URLSearchParams(document.location.search);
+			if(params.get("fp")!=null && params.get("fp")=="false"){
+				console.log("hjhj")
+			}
+			else if(params.get("fp")!=null && params.get("fp")=="true"){
+				document.querySelector("#forgot-password").classList.add("d-none")
+				document.querySelector("#namediv").classList.add("d-none")
+				//document.querySelector("#cpassworddiv").classList.remove("d-none")
+				document.querySelector("#changep").classList.remove("d-none")
+				document.querySelector("#login").classList.add("d-none")
+				document.querySelector("#submit-fp").classList.add("d-none")
+			}
+			else if(params.get("fp")!=null && params.get("fp")=="changed"){
+				window.alert("password changed successfully !")
+			}
+			document.querySelector("#changep").addEventListener("click",()=>{
+				document.querySelector("#form").action="chatWebApp/changePassword?username="+document.querySelector("#username").value+"&password="+document.querySelector("#password").value
+				document.querySelector("#form").submit()
+			})
+			if(params.get("accountCreated")!=null && params.get("accountCreated")=="true"){
+				alert("account created successfully!\nNow you can login with the credentials")
+			}
+			else if(params.get("accountCreated")!=null && params.get("accountCreated")=="false"){
+				alert("your account already exists in our database")
+			}
+			if(params.get("validate")!=null && params.get("validate")=="p"){
+			    document.querySelector("#password").classList.add("is-invalid")
+			}
+			else if(params.get("validate")!=null && params.get("validate")=="u"){
+			    document.querySelector("#username").classList.add("is-invalid")
+			}
+			
+			// handling register href
+			document.querySelector("#register").addEventListener("click",(e)=>{
+			    e.preventDefault()
+				document.querySelector("#passworddiv").classList.remove("d-none")
+				document.querySelector("#submit-fp").classList.add("d-none")
+				document.querySelector("#namediv").classList.remove("d-none")
+				document.querySelector("#create-account").classList.remove("d-none")
+				document.querySelector("#login").classList.add("d-none")
+				document.querySelector("#login-p").classList.remove("d-none")
+				document.querySelector("#register-p").classList.add("d-none")
+			})
+			// handlin click of the create-account button
+			document.querySelector("#create-account").addEventListener("click",(e)=>{
+				document.querySelector("#form").action="chatWebApp/createAccount?name="+document.querySelector("#name").value+"&username="+document.querySelector("#username").value+"&password="+document.querySelector("#password").value
+				document.querySelector("#form").submit()
+			})
+			// handling login href
+			document.querySelector("#login-link").addEventListener("click",(e)=>{
+			    e.preventDefault()
+				document.querySelector("#passworddiv").classList.remove("d-none")
+				document.querySelector("#submit-fp").classList.add("d-none")
+				document.querySelector("#namediv").classList.add("d-none")
+				document.querySelector("#create-account").classList.add("d-none")
+				document.querySelector("#login").classList.remove("d-none")
+				document.querySelector("#login").classList.remove("d-none")
+				document.querySelector("#login-p").classList.add("d-none")
+				document.querySelector("#register-p").classList.remove("d-none")
+			})
+
+			// forgot password
+			document.querySelector("#forgot-password").addEventListener("click",(e)=>{
+				e.preventDefault()
+				document.querySelector("#create-account").classList.add("d-none")
+				document.querySelector("#namediv").classList.add("d-none")
+				document.querySelector("#passworddiv").classList.add("d-none")
+				document.querySelector("#submit-fp").classList.remove("d-none")
+				document.querySelector("#login").classList.add("d-none")
+				
+			})
+			document.querySelector("#submit-fp").addEventListener("click",(e)=>{
+				document.querySelector("#form").action="chatWebApp/forgotPassword?username="+document.querySelector("#username").value
+				document.querySelector("#form").submit()
+			})
+			
+			// show password
+			document.querySelector("#show-password").addEventListener("click",(e)=>{
+				if(document.querySelector("#show-password").value==="show"){
+					document.querySelector("#password").type="text"
+					document.querySelector("#show-password").value="notshow"
+				}
+				else{
+					document.querySelector("#password").type="password"
+					document.querySelector("#show-password").value="show"
+				}
+			})
+			{% comment %} console.log() {% endcomment %}
+		</script>
+	</body>
+</html>

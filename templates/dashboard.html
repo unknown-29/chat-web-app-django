@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>welcome, <i>{{ user.username }}</i><br/>
+    dashboard.html
+    </h1>
+    <h2>Chat-List: </h2>
+    {% for u in user.chatList1 %}
+        <a href="/chatWebApp/dashboard/chatSection?user1={{ user.username }}&user2={{ u.user2 }}">{{ u.user2 }}</a>
+    {% endfor %}
+    {% for u in user.chatList2 %}
+        <a href="/chatWebApp/dashboard/chatSection?user1={{ user.username }}&user2={{ u.user1 }}">{{ u.user1 }}</a>
+    {% endfor %}
+    
+    {% comment %} <script>
+        
+    </script> {% endcomment %}
+</body>
+</html>

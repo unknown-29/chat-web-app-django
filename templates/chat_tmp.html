@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{% load static %}
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>texting ...</title>
+		<script src="https://kit.fontawesome.com/d0d49aaf67.js" crossorigin="anonymous"></script>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+			crossorigin="anonymous"
+		/>
+		<!--https://stackoverflow.com/questions/71154905/css-for-chat-room-speech-bubble-position-->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<link
+			rel="stylesheet"
+			href="https://rawgit.com/mervick/emojionearea/master/dist/emojionearea.min.css"
+		/>
+		{% comment %} /home/dm/chatWebApp/static/lib/js/jquery.emojiarea.min.js
+		{% endcomment %}
+		<style>
+			/* QuickReset */
+			* {
+			    margin: 0;
+			    box-sizing: border-box;
+			}
+
+			.chat {
+			    {% comment %} border-ra {% endcomment %}
+			    {% comment %} --rad: 20px;
+			    --rad-sm: 3px; {% endcomment %}
+			    font: 16px/1.5 sans-serif;
+			    display: flex;
+			    flex-direction: column;
+			    padding: 1%;
+			    {% comment %} max-width: 500px; {% endcomment %}
+			    max-width:100%;
+			    {% comment %} margin: auto; {% endcomment %}
+			}
+			.msg:hover{
+			    cursor: pointer;
+			}
+			.msg {
+			    position: relative;
+			    max-width: 50%;
+			    padding: 7px 15px;
+			    margin-bottom: 2px;
+			    {% comment %} width: fit-content; {% endcomment %}
+			    max-width:50%;
+			    {% comment %} overflow: show; {% endcomment %}
+			}
+
+			.msg.sent {
+			    {% comment %} border-radius: var(--rad) var(--rad-sm) var(--rad-sm) var(--rad); {% endcomment %}
+			    border:0px solid;
+			    border-radius: 25px;
+			    background: #0881fe;
+			    color: #fff;
+			    /* moves it to the right */
+			    margin-left: auto;
+			}
+
+			.msg.rcvd {
+			    {% comment %} border-radius: var(--rad-sm) var(--rad) var(--rad) var(--rad-sm); {% endcomment %}
+			    border:0px solid;
+			    border-radius: 25px;
+			    background: #e5e5ea;
+			    color: black;
+			    {% comment %} color: #555; {% endcomment %}
+			    /* moves it to the left */
+			    margin-right: auto;
+			}
+
+			/* Improve radius for messages group */
+
+			.msg.sent:first-child,
+			.msg.rcvd+.msg.sent {
+			    border-top-right-radius: var(--rad);
+			}
+
+			.msg.rcvd:first-child,
+			.msg.sent+.msg.rcvd {
+			    border-top-left-radius: var(--rad);
+			}
+
+
+			/* time */
+
+			.msg::before {
+			    content: attr(data-time);
+			    font-size: 0.8rem;
+			    position: absolute;
+			    bottom: 100%;
+			    color: #888;
+			    /* Hidden by default */
+			    display: none;
+			}
+
+			.msg.sent::before {
+			    right: 15px;
+			}
+
+			.msg.rcvd::before {
+			    left: 15px;
+			}
+
+
+			/* Show time only for first message in group */
+
+			.msg:first-child::before,
+			.msg.sent+.msg.rcvd::before,
+			.msg.rcvd+.msg.sent::before {
+			    /* Show only for first message in group */
+			    display: block;
+			}
+			.input-message{
+			    display:flex;
+			    justify-content:center;
+			    align-items:center;
+			}
+			.input{
+			    width: 95%;
+			    border-radius:20px;
+			    font-size:16px/1.5;
+			    border:2px solid black;
+			}
+			.send-btn{
+			    background-color:transparent;
+			    border:none;
+			}
+			.send-btn:hover{
+			    cursor:pointer;
+			}
+			#delete{
+			    border:none;
+			    background-color:transparent;
+			    font-size:large;
+			    color:black;
+			}
+			#delete:hover{
+			    cursor: pointer;
+			}
+			.sender{
+			    color:black;
+			}
+			.receiver{
+			    color:black;
+			}
+			body{
+			    background-color:#fff;
+			}
+			.b-example-vr {
+			    flex-shrink: 0;
+			    width: 1.5rem;
+			    height: 100vh;
+			}
+			.b-example-divider {
+			    height: 3rem;
+			    background-color: rgba(0, 0, 0, .1);
+			    border: solid rgba(0, 0, 0, .15);
+			    border-width: 1px 0;
+			    box-shadow: inset 0 0.5em 1.5em rgb(0 0 0 / 10%), inset 0 0.125em 0.5em rgb(0 0 0 / 15%);
+			}
+			.scrollarea {
+			    overflow-y: scroll;
+			    overflow-x:scroll;
+			}
+			.border-bottom {
+			    border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color)!important;
+			}
+			.list-group-flush {
+			    border-radius: 0;
+			}
+			#btn-back-to-top {
+			    position: fixed;
+			    bottom: 10%;
+			    right: 2%;
+			    display: none;
+			}
+			#btn-back-to-down {
+			    position: fixed;
+			    top: 20px; /*90 if not centered*/
+			    left: 30%;
+			    display: none;
+			}
+			.profile{
+			    z-index:99;
+			    background-color:#f8f9fa;
+			    padding-top:1%;
+			    top:0px;
+			    position: sticky;
+			    margin:auto; /*for centering*/
+			}
+
+			/*delete chat hover effect*/
+			.hide {
+			    display: none;
+			}
+
+			a.list-group-item:hover .hide {
+			    display: block;
+			    color: red;
+			}
+			.delete-chat{
+			    background-color:transparent;
+			    border:none;
+			}
+			.emojionearea .emojionearea-button.active + .emojionearea-picker {
+			    filter: alpha(enabled=false);
+			    opacity: 0.9;
+			  }
+			  .emojionearea .emojionearea-picker {
+			    background: #FFF;
+			    position: fixed;
+			    -moz-box-shadow: 0 1px 5px rgba(0,0,0,.32);
+			    -webkit-box-shadow: 0 1px 5px rgba(0,0,0,.32);
+			    box-shadow: 0 1px 5px rgba(0,0,0,.32);
+			    -moz-border-radius: 5px;
+			    -webkit-border-radius: 5px;
+			    border-radius: 5px;
+			    height: 276px;
+			    width: 316px;
+			    margin-top:63vh;
+			    margin-right:10vh;
+			    {% comment %} top: 48%;
+			    left: 52%; {% endcomment %}
+			    z-index: 90;
+			    -moz-transition: all .25s ease-in-out;
+			    -o-transition: all .25s ease-in-out;
+			    -webkit-transition: all .25s ease-in-out;
+			    transition: all .25s ease-in-out;
+			    filter: alpha(Opacity=0);
+			    opacity: 0;
+			    -moz-user-select: -moz-none;
+			    -ms-user-select: none;
+			    -webkit-user-select: none;
+			    user-select: none;
+			  }
+			  .emojionearea, .emojionearea * {
+			    -moz-box-sizing: border-box;
+			    -webkit-box-sizing: border-box;
+			    box-sizing: border-box;
+			  }
+		</style>
+	</head>
+	<body>
+		<main class="d-flex flex-nowrap">
+			<div
+				class="d-flex flex-column align-items-stretch flex-shrink-0 bg-white"
+				style="width: 27%; height: 100vh; position: sticky; top: 0px"
+			>
+				<a
+					href="#"
+					class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom"
+					style="overflow-x: auto"
+				>
+					<img
+						width="60"
+						height="60"
+						class="rounded-circle me-2"
+						src="https://avatarfiles.alphacoders.com/128/thumb-128984.png"
+						alt=""
+					/>
+					<h4><span>{{users.user1}}</span></h4>
+				</a>
+				<!--searching in chatlist-->
+				<div
+					class="search input-group justify-content-center mb-3"
+					style="width: 95%; margin-left: 2.5%"
+				>
+					<input
+						type="search"
+						id="search-input"
+						class="form-control"
+						placeholder="Search users from chat-list..."
+						style="border-right: none"
+						aria-label="Search"
+					/><button
+						class="btn"
+						id="search"
+						style="
+							border: 1px solid #ced4da;
+							border-left: none;
+							background-color: transparent;
+						"
+					>
+						<i class="fas fa-search" style="color: lightgray"></i>
+					</button>
+				</div>
+				<div
+					id="chat-list"
+					class="list-group list-group-flush border-bottom scrollarea"
+				>
+					<!--getting chatlist ready-->
+					{% for con in users.con01 %}
+					<a
+						href="/chatWebApp/dashboard/chatSection/tmp?user1={{users.user1}}&user2={{con.username}}"
+						class="list-group-item list-group-item-action py-3 lh-sm"
+						id="{{con.username}}"
+						aria-current="true"
+					>
+						<div
+							class="d-flex w-100 align-items-center justify-content-between"
+						>
+							<strong class="mb-1">{{con.username}}</strong>
+							<small>Wed</small>
+						</div>
+						<div class="col-10 mb-1 small">{{con.profile_bio}}</div>
+						<br />
+						<span class="hide"
+							><button class="{{con.username}} delete-chat">
+								<i class="fa-solid fa-trash"></i></button
+						></span>
+					</a>
+					{% endfor %} {% for con in users.con02 %}
+					<a
+						href="/chatWebApp/dashboard/chatSection/tmp?user1={{users.user1}}&user2={{con.username}}"
+						class="list-group-item list-group-item-action py-3 lh-sm"
+						id="{{con.username}}"
+						aria-current="true"
+					>
+						<div
+							class="d-flex w-100 align-items-center justify-content-between"
+						>
+							<strong class="mb-1">{{con.username}}</strong>
+							<small>Wed</small>
+						</div>
+						<div class="col-10 mb-1 small">{{con.profile_bio}}</div>
+						<br />
+						<span class="hide"
+							><button class="{{con.username}} delete-chat">
+								<i class="fa-solid fa-trash"></i></button
+						></span>
+					</a>
+					{% endfor %}
+					<a
+						href="#"
+						class="list-group-item list-group-item-action py-3 lh-sm"
+						aria-current="true"
+					>
+						<div
+							class="d-flex w-100 align-items-center justify-content-between"
+						>
+							<strong class="mb-1"
+								>List group item heading</strong
+							>
+							<small>Wed</small>
+						</div>
+						<div class="col-10 mb-1 small">
+							Some placeholder content in a paragraph below the
+							heading and date.
+						</div>
+					</a>
+					<a
+						href="#"
+						class="list-group-item list-group-item-action py-3 lh-sm"
+					>
+						<div
+							class="d-flex w-100 align-items-center justify-content-between"
+						>
+							<strong class="mb-1"
+								>List group item heading</strong
+							>
+							<small>Tues</small>
+						</div>
+						<div class="col-10 mb-1 small">
+							Some placeholder content in a paragraph below the
+							heading and date.
+						</div>
+					</a>
+					<a
+						href="#"
+						class="list-group-item list-group-item-action py-3 lh-sm"
+					>
+						<div
+							class="d-flex w-100 align-items-center justify-content-between"
+						>
+							<strong class="mb-1"
+								>List group item heading</strong
+							>
+							<small>Mon</small>
+						</div>
+						<div class="col-10 mb-1 small">
+							Some placeholder content in a paragraph below the
+							heading and date.
+						</div>
+					</a>
+
+					<a
+						href="#"
+						class="list-group-item list-group-item-action py-3 lh-sm"
+						aria-current="true"
+					>
+						<div
+							class="d-flex w-100 align-items-center justify-content-between"
+						>
+							<strong class="mb-1"
+								>List group item heading</strong
+							>
+							<small>Wed</small>
+						</div>
+						<div class="col-10 mb-1 small">
+							Some placeholder content in a paragraph below the
+							heading and date.
+						</div>
+					</a>
+					<a
+						href="#"
+						class="list-group-item list-group-item-action py-3 lh-sm"
+					>
+						<div
+							class="d-flex w-100 align-items-center justify-content-between"
+						>
+							<strong class="mb-1"
+								>List group item heading</strong
+							>
+							<small class="text-muted">Tues</small>
+						</div>
+						<div class="col-10 mb-1 small">
+							Some placeholder content in a paragraph below the
+							heading and date.
+						</div>
+					</a>
+					<a
+						href="#"
+						class="list-group-item list-group-item-action py-3 lh-sm"
+					>
+						<div
+							class="d-flex w-100 align-items-center justify-content-between"
+						>
+							<strong class="mb-1"
+								>List group item heading</strong
+							>
+							<small class="text-muted">Mon</small>
+						</div>
+						<div class="col-10 mb-1 small">
+							Some placeholder content in a paragraph below the
+							heading and date.
+						</div>
+					</a>
+					<a
+						href="#"
+						class="list-group-item list-group-item-action py-3 lh-sm"
+						aria-current="true"
+					>
+						<div
+							class="d-flex w-100 align-items-center justify-content-between"
+						>
+							<strong class="mb-1"
+								>List group item heading</strong
+							>
+							<small class="text-muted">Wed</small>
+						</div>
+						<div class="col-10 mb-1 small">
+							Some placeholder content in a paragraph below the
+							heading and date.
+						</div>
+					</a>
+					<a
+						href="#"
+						class="list-group-item list-group-item-action py-3 lh-sm"
+					>
+						<div
+							class="d-flex w-100 align-items-center justify-content-between"
+						>
+							<strong class="mb-1"
+								>List group item heading</strong
+							>
+							<small class="text-muted">Tues</small>
+						</div>
+						<div class="col-10 mb-1 small">
+							Some placeholder content in a paragraph below the
+							heading and date.
+						</div>
+					</a>
+					<a
+						href="#"
+						class="list-group-item list-group-item-action py-3 lh-sm"
+					>
+						<div
+							class="d-flex w-100 align-items-center justify-content-between"
+						>
+							<strong class="mb-1"
+								>List group item heading</strong
+							>
+							<small class="text-muted">Mon</small>
+						</div>
+						<div class="col-10 mb-1 small">
+							Some placeholder content in a paragraph below the
+							heading and date.
+						</div>
+					</a>
+					<a
+						href="#"
+						class="list-group-item list-group-item-action py-3 lh-sm"
+						aria-current="true"
+					>
+						<div
+							class="d-flex w-100 align-items-center justify-content-between"
+						>
+							<strong class="mb-1"
+								>List group item heading</strong
+							>
+							<small class="text-muted">Wed</small>
+						</div>
+						<div class="col-10 mb-1 small">
+							Some placeholder content in a paragraph below the
+							heading and date.
+						</div>
+					</a>
+					<a
+						href="#"
+						class="list-group-item list-group-item-action py-3 lh-sm"
+					>
+						<div
+							class="d-flex w-100 align-items-center justify-content-between"
+						>
+							<strong class="mb-1"
+								>List group item heading</strong
+							>
+							<small class="text-muted">Tues</small>
+						</div>
+						<div class="col-10 mb-1 small">
+							Some placeholder content in a paragraph below the
+							heading and date.
+						</div>
+					</a>
+					<a
+						href="#"
+						class="list-group-item list-group-item-action py-3 lh-sm"
+					>
+						<div
+							class="d-flex w-100 align-items-center justify-content-between"
+						>
+							<strong class="mb-1"
+								>List group item heading</strong
+							>
+							<small class="text-muted">Mon</small>
+						</div>
+						<div class="col-10 mb-1 small">
+							Some placeholder content in a paragraph below the
+							heading and date.
+						</div>
+					</a>
+				</div>
+			</div>
+			<div
+				class="b-example-divider b-example-vr"
+				style="width: 2%; height: auto"
+			></div>
+			<div
+				class="d-flex flex-column flex-shrink-0 p-3 bg-light"
+				style="width: 70%"
+			>
+
+				<div class= "profile">
+					<a
+						href="#"
+						class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom"
+						style="overflow-x: auto"
+					>
+						<img
+							width="60"
+							height="60"
+							class="rounded-circle me-2"
+							src="https://static.wikia.nocookie.net/ricksanchez/images/e/e8/Morty.png/revision/latest?cb=20160605181037"
+							alt=""
+						/>
+						<h4><span>{{users.user2}}</span></h4>
+					</a>
+					{% comment %}
+					<h3>
+						<img
+							width="60"
+							height="60"
+							class="rounded-circle me-2"
+							src="https://static.wikia.nocookie.net/ricksanchez/images/e/e8/Morty.png/revision/latest?cb=20160605181037"
+							alt=""
+						/><span>{{users.user2}}</span>
+					</h3>
+					{% endcomment %} {% comment %}
+					<hr />
+					{% endcomment %}
+				</div>
+				<br /><br />
+				<div class="chat">
+					{% for m in users.messages %} {% comment %} {{m.timestamp}}
+					{{m.connection_id}} {% endcomment %} 
+                    {% if m.sender.username|stringformat:"s" == users.user1|stringformat:"s" %}
+					<div
+						class='msg sent {{m.connection_id}} {{m.timestamp|date:"Y-m-d/H:i:s/u"}}'
+						style="text-align: right"
+					>
+						<span class="sender" style="left: 100px"
+							>{{users.user1}}</span
+						>
+						<h4>{{ m.message }}</h4>
+					</div>
+					{% else %}
+					<div
+						class='msg rcvd {{m.connection_id}} {{m.timestamp|date:"Y-m-d/H:i:s/u"}}'
+						style=""
+					>
+						<span class="receiver">{{users.user2}}</span>
+						<h4>{{ m.message }}</h4>
+					</div>
+					{% endif %} 
+                {% endfor %}
+				</div>
+				<div class="position-sticky" style="bottom: 0px">
+					<form
+						id="form"
+						method="post"
+						action="/chatWebApp/dashboard/chatSection/?user1={{users.user1}}&user2={{users.user2}}"
+					>
+						<div class="input-message">
+							<div class="input-group m-2 p-2">
+								<input
+									type="text"
+									id="emoji-area"
+									data-emojiable="true"
+									name="message"
+									class="form-control w-75 p-3"
+									placeholder="type your message here ..."
+								/>
+								<div class="input-group-append">
+									<button
+										class="send-btn btn btn-outline-dark"
+										name="btn"
+										type="button"
+										value="sub"
+										id="sub"
+									>
+										<i
+											class="fa-regular fa-paper-plane"
+										></i>
+									</button>
+								</div>
+							</div>
+							{% comment %}
+							<span style="padding: 1%">message</span>
+							<input class="input" type="text" name="message" />
+							<button
+								class="send-btn"
+								type="button"
+								name="btn"
+								value="sub"
+								id="sub"
+							>
+								<i class="fa-regular fa-paper-plane"></i>
+							</button>
+							{% endcomment %}
+						</div>
+						{% comment %} {% if users.hidden is not None %}
+						<input
+							type="hidden"
+							name="hidden"
+							id="hidden"
+							value="{{users.hidden}}"
+						/>
+						{% else %}
+						<input
+							type="hidden"
+							name="hidden"
+							id="hidden"
+							value="hid"
+						/>
+						{% endif %} {% endcomment %} {% comment %}
+						<a href="">delete chat</a> {% endcomment %}
+						<!-- Back to top button -->
+						<button
+							type="button"
+							class="btn btn-outline-dark btn-floating btn-lg"
+							id="btn-back-to-top"
+						>
+							<i class="fas fa-arrow-up"></i>
+						</button>
+						<button
+							type="button"
+							class="btn btn-outline-dark btn-floating btn-lg"
+							id="btn-back-to-down"
+						>
+							<i class="fas fa-arrow-down"></i>
+						</button>
+					</form>
+				</div>
+			</div>
+			<div
+				class="b-example-divider b-example-vr"
+				style="width: 1%; height: auto"
+			></div>
+		</main>
+		<script>
+			//document.querySelector('#hidden').value="hid"
+			document.querySelector("#sub").addEventListener("click",(e)=>{
+			    e.preventDefault()
+			    //console.log("click")
+			    document.querySelector("#form").action='/chatWebApp/dashboard/chatSection/send?user1={{users.user1}}&user2={{users.user2}}'
+			    document.querySelector("#form").submit()
+			})
+			document.addEventListener("keydown",(e)=>{
+			    //checking if enter key is pressed
+			    if(e.keyCode==13){
+			        e.preventDefault()
+			        //console.log("enter")
+			        document.querySelector("#form").action='/chatWebApp/dashboard/chatSection/send?user1={{users.user1}}&user2={{users.user2}}'
+			        document.querySelector("#form").submit()
+			    }
+			})
+			//document.querySelector("#form").action='/chatWebApp/dashboard/chatSection/?user1={{users.user1}}&user2={{users.user2}}'
+			{% comment %} document.addEventListener('refresh') {% endcomment %}
+
+			//auto refresh
+			//setTimeout("location.reload(true);",30000);
+
+			//to keep scroll position as it is so it does not get changed
+			document.addEventListener("DOMContentLoaded", function(event) {
+			    var scrollpos = localStorage.getItem('scrollpos');
+			    if (scrollpos) window.scrollTo(0, scrollpos);
+			    });
+
+			    window.onbeforeunload = function(e) {
+			    localStorage.setItem('scrollpos', window.scrollY);
+			};
+
+			document.querySelectorAll(".msg").forEach((msg)=>{
+			    //console.log("1")
+			    if(msg.classList.contains("delete")){
+			        //console.log("2")
+			        msg.removeChild(msg.children[2])
+			        msg.classList.remove("delete")
+			    }
+			    else{
+			        //console.log("3")
+			        msg.addEventListener("click",(e)=>{
+			            //console.log("clicked")
+
+			            // toggle off
+			            if(msg.classList.contains("delete")){
+			                msg.classList.remove("delete")
+			                //console.log(msg.children[2])
+			                msg.removeChild(msg.children[2])
+			            }
+
+			            // toggle on
+			            else{
+			                //console.log("4")
+			                let button = document.createElement("button")
+			                button.id="delete"
+			                //button.textContent="delete"
+			                i=document.createElement("i")
+			                i.classList.add("fa-solid")
+			                i.classList.add("fa-trash-can")
+			                button.appendChild(i)
+			                msg.appendChild(button)
+			                msg.classList.add("delete")
+			                //console.log(msg.classList)
+			                // listening to when the delete button is clicked
+			                document.querySelector("#delete").addEventListener("click",(eb)=>{
+			                    //console.log("5")
+			                    // to stop bubbling
+			                    //console.log("delete")
+			                    //if(!msg.classList.contains("delete")){
+			                    //    console.log("6")
+			                    //    msg.classList.add("delete")
+			                    //}
+			                    //console.log(msg.classList)
+			                    document.querySelector("#form").action="deletemsg?user1={{users.user1}}&user2={{users.user2}}&conid="+msg.classList[2]+"&time="+msg.classList[3]
+			                    document.querySelector("#form").submit()
+			                    //eb.stopPropagation()
+			                })
+			            }
+			        })
+			    }
+			})
+			//handling active tab on click i.e. handling and knowing which user's tab from chatlist is active
+			document.querySelectorAll(".list-group-item").forEach((i)=>{
+			    i.addEventListener("click",(e)=>{
+			        //console.log(i)
+			        if(!i.classList.contains("active")){
+			            document.querySelector(".active").classList.remove("active")
+			            i.classList.add("active")
+			        }
+			    })
+			})
+
+			document.querySelector("#{{users.user2}}").classList.add("active")
+
+			// handling search button
+			document.querySelector("#search-input").addEventListener("keyup",(e)=>{
+			    //console.log(e.keyCode)
+			    console.log(document.querySelector("#search-input").value)
+			    //document.querySelector("#form").action="searchUser?user1={{users.user1}}&user2={{users.user2}}&search="+document.querySelector("#search-input").value
+			    //document.querySelector("#form").submit()
+			    document.querySelectorAll(".list-group-item").forEach((user)=>{
+			        if(!user.id.match(new RegExp(document.querySelector("#search-input").value,'gi'))){
+			            //console.log("1")
+			            user.style.display="none"
+			        }
+			        else{
+			            //console.log("2")
+			            user.style.display=""
+			        }
+			    })
+			})
+			// Back to top button
+			// When the user clicks on the button, scroll to the top of the document
+			document.getElementById("btn-back-to-top").addEventListener("click", ()=>{
+			    document.body.scrollTop = 0;
+			    document.documentElement.scrollTop = 0;
+			})
+
+			// When the user scrolls down 20px from the top of the document, show the button
+			document.getElementById("btn-back-to-down").addEventListener("click", ()=>{
+			    //document.body.scrollTop = 0;
+			    document.documentElement.scrollTop = document.body.scrollHeight;
+			})
+			{% comment %} console.log() {% endcomment %}
+			window.onscroll = () => {
+			    if(document.documentElement.scrollTop < (document.body.scrollHeight - 1200)){
+			        //console.log(document.documentElement.scrollTop < (document.body.scrollHeight -1000))
+			        document.getElementById("btn-back-to-down").style.display = "block";
+			        setTimeout(()=>{
+			            if(document.getElementById('btn-back-to-down').style.display!="none")
+			                document.getElementById('btn-back-to-down').style.display="none";
+			        }, 5000);
+			    }
+			    else{
+			        //console.log(document.documentElement.scrollTop)
+			        document.getElementById("btn-back-to-down").style.display = "none";
+			    }
+			    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+			        document.getElementById("btn-back-to-top").style.display = "block";
+			        setTimeout(()=>{
+			            if(document.getElementById('btn-back-to-top').style.display!="none")
+			                document.getElementById('btn-back-to-top').style.display="none";
+			        }, 5000);
+			    } else {
+			        document.getElementById("btn-back-to-top").style.display = "none";
+			    }
+			};
+			document.querySelectorAll(".delete-chat").forEach((btn)=>{
+			    btn.addEventListener("click",(e)=>{
+			        e.preventDefault()
+			        e.stopPropagation()
+			        // confirm alert to check if user is certain to delete the " whole chat "
+			        if(confirm("sure you want to delete chat with "+btn.classList[0]+" ?\n you won't be able to recover !")){
+			            document.querySelector("#form").action="deletechat?user1={{users.user1}}&user2="+btn.classList[0]
+			            console.log(document.querySelector("#form").action)
+			            document.querySelector("#form").submit()
+			        }
+			    })
+			        //console.log("click")
+			})
+			//console.log(document.body.scrollHeight)
+			{% comment %} console.log(window.history.replaceState) {% endcomment %}
+			{% comment %} if ( window.history.replaceState ) {
+			    window.history.replaceState( null, null, window.location.href );
+			} {% endcomment %}
+		</script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://rawgit.com/mervick/emojionearea/master/dist/emojionearea.js"></script>
+		<script>
+			$(document).ready(function () {
+				$("#emoji-area").emojioneArea({
+					pickerPosition: "down",
+					tonesStyle: "bullet",
+					events: {
+						keyup: function (editor, event) {
+							console.log(editor.html());
+							console.log(this.getText());
+						},
+					},
+				});
+
+				$("#divOutside").click(function () {
+					$(".emojionearea-button").click();
+				});
+			});
+
+			$("#lala").click(function () {
+				alert($("#emojionearea1").val());
+				$("#nnnnn").append($("#emojionearea1").val());
+			});
+		</script>
+	</body>
+</html>
