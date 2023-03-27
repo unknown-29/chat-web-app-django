@@ -26,6 +26,7 @@ def createAccount(request) :
     # checking if user exists or not
     if User.objects.filter(username=request.GET['username']).count() == 0:
         User.objects.create(name=request.GET['name'],username=request.GET['username'],password=request.GET['password'])
+        UserProfilePic.objects.create(username=User.objects.all().filter(username=request.GET['username']).first(),profile_picture="images/default-avatar.jpg")
         # account created successfully
         return redirect("/chatWebApp?accountCreated=true")
     else:
@@ -36,7 +37,7 @@ def createAccount(request) :
 def validate(request) :
     # validation
     if(User.objects.filter(username=request.GET['username'],password=request.GET['password']).values("username").count()==1) :
-        return redirect("/chatWebApp/dashboard?username="+request.GET['username']+"")
+        return redirect("/chatWebApp/dashboard/chatSection?user1="+request.GET['username']+"&user2=none")
     elif User.objects.filter(username=request.GET['username']).values("username").count()==1:
         # password wrong but user exists
         return redirect("/chatWebApp?validate=p")

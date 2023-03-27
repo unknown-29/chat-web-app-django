@@ -18,14 +18,19 @@ from django.urls import path,include
 from . import views
 
 urlpatterns = [
-    path('',views.showMessages),
-    path('/',views.showMessages),
+    path('',views.showMessages_tmp),
+    path('/',views.showMessages_tmp),
     # path('/',views.showMessages),
     path('/send',views.send),
     path('/deletemsg',views.deletemsg),
-    path('/tmp',views.tmp),
+    path('/chat',views.chat),
     path('/searchUser',views.searchUser),
-    path('/deletechat',views.deletechat)
+    path('/deletechat',views.deletechat),
+    path('/deleteuser',views.deleteuser),
+    path('/adduser',views.adduser),
+    path('/updateProfile',views.updateProfile),
+    path('/chat/test',views.test),
+    path('/logout',views.logout),
     # path('admin/', admin.site.urls),
     # path('chatWebApp/',include("home.urls")),
     # path('dashboard/',include("dashboard.urls"))
