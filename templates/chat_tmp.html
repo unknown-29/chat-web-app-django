@@ -620,7 +620,7 @@
 						action="/chatWebApp/dashboard/chatSection/?user1={{users.user1}}&user2={{users.user2}}"
 					>
 						<div class="input-message" style="height: 0%;position: fixed;width: -moz-available;top: 90%;margin-right: 1%;">
-							<div class="input-group m-2 p-2">
+							<div class="input-group mb-4 p-2" style="width:67vw;">
 								<textarea
 									type="text"
 									id="emoji-area"
@@ -974,11 +974,11 @@
 				e.stopPropagation()
 				
 				if(document.querySelector("#form")!=null){
-					document.querySelector("#form").action="logout"
+					document.querySelector("#form").action="/chatWebApp/dashboard/chatSection/logout"
 					document.querySelector("#form").submit()
 				}
 				else{
-					document.querySelector("#tform").action="logout"
+					document.querySelector("#tform").action="/chatWebApp/dashboard/chatSection/logout"
 					document.querySelector("#tform").submit()
 				}
 			})
